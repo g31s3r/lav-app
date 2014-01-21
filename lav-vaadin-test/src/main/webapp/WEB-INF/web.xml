@@ -7,20 +7,20 @@
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
-	
+
 	<display-name>lav-vaadin</display-name>
-	
+
 	<context-param>
 		<param-name>productionMode</param-name>
 		<param-value>false</param-value>
 	</context-param>
-	
+
 	<!-- This listener will load properties from files (configuration.properties), 
 		initialize database connection, and set up everything -->
 	<listener>
 		<listener-class>enterpriseapp.DefaultContextListener</listener-class>
 	</listener>
-	
+
 	<servlet>
 		<servlet-name>Lav Servlet</servlet-name>
 		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
@@ -29,22 +29,22 @@
 			<param-value>com.menoia.lav.vaadin.LavanderiaApplication</param-value>
 		</init-param>
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>ImageServlet</servlet-name>
 		<servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
 	</servlet>
-	
+
 	<servlet-mapping>
 		<servlet-name>Lav Servlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>ImageServlet</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
-	
+
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>

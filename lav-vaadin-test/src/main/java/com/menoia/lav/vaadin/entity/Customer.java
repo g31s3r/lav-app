@@ -31,6 +31,16 @@ public class Customer extends Dto {
     private String name;
 
     @Basic
+    @CrudField(isEmail = true)
+    private String email;
+
+    @Basic
+    private String phone;
+
+    @Basic
+    private String cellphone;
+
+    @Basic
     private String city;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -67,6 +77,36 @@ public class Customer extends Dto {
     public void setName(String name) {
 
         this.name = name;
+    }
+
+    public String getEmail() {
+
+        return email;
+    }
+
+    public void setEmail(String email) {
+
+        this.email = email;
+    }
+
+    public String getPhone() {
+
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+
+        this.phone = phone;
+    }
+
+    public String getCellphone() {
+
+        return cellphone;
+    }
+
+    public void setCellphone(String cellphone) {
+
+        this.cellphone = cellphone;
     }
 
     public String getCity() {

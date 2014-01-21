@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -16,6 +15,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.google.common.base.Joiner;
 
 import enterpriseapp.hibernate.annotation.CrudTable;
 import enterpriseapp.hibernate.dto.Dto;
@@ -43,7 +44,7 @@ public class Prototype extends Dto {
     @Column
     private String description;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private Set<Process> processes;
 
     @Column
@@ -191,7 +192,11 @@ public class Prototype extends Dto {
     @Override
     public String toString() {
 
-        return seal.toString();
+        String string = "";
+        if (processes != null && !processes.isEmpty()) {
+            string = " - " + Joiner.on(", ").join(processes);
+        }
+        return seal.toString() + string;
     }
 
 }

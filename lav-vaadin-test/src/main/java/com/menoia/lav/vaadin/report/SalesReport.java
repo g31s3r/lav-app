@@ -1,134 +1,84 @@
 package com.menoia.lav.vaadin.report;
 
-import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
-
-import ar.com.fdvs.dj.domain.AutoText;
-import ar.com.fdvs.dj.domain.Style;
-import ar.com.fdvs.dj.domain.builders.DynamicReportBuilder;
-import ar.com.fdvs.dj.domain.builders.StyleBuilder;
-import ar.com.fdvs.dj.domain.constants.Font;
-import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.menoia.lav.vaadin.container.LavanderiaContainerFactory;
 import com.menoia.lav.vaadin.container.SaleContainer;
 import com.menoia.lav.vaadin.entity.Customer;
 import com.menoia.lav.vaadin.entity.Sale;
+import com.menoia.lav.vaadin.entity.Status;
+import com.menoia.lav.vaadin.field.EnumField;
 import com.menoia.lav.vaadin.ui.Constants;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 import enterpriseapp.Utils;
 import enterpriseapp.ui.crud.EntityField;
-import enterpriseapp.ui.reports.PrintViewReport;
 
-/**
- * A simple report with all the entries in the address book.
- * 
- * @author Alejandro Duarte
- * 
- */
-public class SalesReport extends PrintViewReport {
+public class SalesReport extends LavanderiaReport {
 
     private static final long serialVersionUID = 1L;
 
     private EntityField customerField;
+    private EnumField statusField;
 
     @Override
-    public String[] getColumnProperties() {
+    public SortedSet<LavanderiaReportColumn> getReportColumns() {
 
-        return new String[] { "date", "processes", "unitPrice", "quantity", "total", "status" };
-    }
-
-    @Override
-    public Class<?>[] getColumnClasses() {
-
-        return new Class<?>[] { Date.class, String.class, BigDecimal.class, Long.class, BigDecimal.class, String.class };
-    }
-
-    @Override
-    public String[] getColumnTitles() {
-
-        return new String[] { Utils.getPropertyLabel("sale", "date"), Utils.getPropertyLabel("prototype", "processes"),
-            Utils.getPropertyLabel("prototype", "unitPrice"), Utils.getPropertyLabel("sale", "quantity"),
-            Utils.getPropertyLabel("sale", "total"), Utils.getPropertyLabel("sale", "status") };
+        SortedSet<LavanderiaReportColumn> set = new TreeSet<>();
+        set.add(new LavanderiaReportColumn(1, "date", Utils.getPropertyLabel("sale", "date"), Date.class));
+        set.add(new LavanderiaReportColumn(2, "name", Utils.getPropertyLabel("prototype", "customer"), String.class));
+        set.add(new LavanderiaReportColumn(3, "seal", Utils.getPropertyLabel("prototype", "seal"), Long.class));
+        set.add(new LavanderiaReportColumn(4, "unitPrice", Utils.getPropertyLabel("prototype", "unitPrice"),
+            BigDecimal.class));
+        set.add(new LavanderiaReportColumn(5, "quantity", Utils.getPropertyLabel("sale", "quantity"), Long.class));
+        set.add(new LavanderiaReportColumn(6, "total", Utils.getPropertyLabel("sale", "total"), BigDecimal.class));
+        set.add(new LavanderiaReportColumn(7, "status", Utils.getPropertyLabel("sale", "status"), String.class));
+        return set;
     }
 
     @Override
     public Collection<?> getData() {
 
-        // here we need to return all the data to show in the report
-        // this will be called when the "Refresh" button is clicked
+        Customer customer = (Customer) customerField.getValue();
+        Status status = (Status) statusField.getValue();
+
         SaleContainer saleContainer = (SaleContainer) LavanderiaContainerFactory.getInstance().getContainer(Sale.class);
-        return saleContainer.getCallReportData((Customer) customerField.getValue(), getColumnProperties(),
-            getColumnClasses());
+        return saleContainer.getCallReportData(customer, status, getColumnProperties(), getColumnClasses());
     }
 
     @Override
     public Component getParametersComponent() {
 
-        // we will add a component into the "Configuration" section
         customerField =
             new EntityField(Customer.class, LavanderiaContainerFactory.getInstance().getContainer(Customer.class));
         customerField.setCaption(Constants.uiCustomer);
         customerField.setImmediate(true);
 
+        statusField = new EnumField(Status.class);
+        statusField.setCaption(Constants.uiStatus);
+        statusField.setImmediate(true);
+
         VerticalLayout component = new VerticalLayout();
         component.addComponent(customerField);
-
-        Button btn = new Button("PDF");
-        btn.addListener(new ClickListener() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-
-                exportToPdf();
-            }
-        });
-        component.addComponent(btn);
+        component.addComponent(statusField);
 
         return component;
     }
 
     @Override
-    public DynamicReportBuilder getReportBuilder() {
+    public String getTitle() {
 
-        // let's override this method to add some elements to the report
-        DynamicReportBuilder reportBuilder = super.getReportBuilder();
-
-        Style headerStyle = new StyleBuilder(true).setFont(Font.ARIAL_MEDIUM).build();
-
-        reportBuilder.addAutoText(Constants.uiForInternalUseOnly, AutoText.POSITION_HEADER, AutoText.ALIGMENT_LEFT,
-            200, headerStyle);
-        reportBuilder.addAutoText(AutoText.AUTOTEXT_PAGE_X_OF_Y, AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT,
-            200, 10, headerStyle);
-        reportBuilder.addAutoText(Utils.getCurrentTimeAndDate(), AutoText.POSITION_HEADER, AutoText.ALIGNMENT_RIGHT,
-            200, headerStyle);
-
-        Style titleStyle =
-            new StyleBuilder(true).setPadding(0).setFont(Font.ARIAL_BIG_BOLD)
-                .setHorizontalAlign(HorizontalAlign.CENTER).build();
-        reportBuilder.setTitleStyle(titleStyle);
-        reportBuilder.setTitleHeight(18);
-        String title = Constants.uiSalesReport;
+        String title = super.getTitle();
 
         if (customerField.getValue() != null) {
-            title += " - " + customerField.getValue();
+            title += " - " + customerField.getValue().toString();
         }
 
-        reportBuilder.setTitle(title);
-
-        Style footerStyle = new StyleBuilder(true).setFont(Font.ARIAL_MEDIUM).setTextColor(Color.GRAY).build();
-        reportBuilder.addAutoText("Powered by Enterprise App for Vaadin", AutoText.POSITION_FOOTER,
-            AutoText.ALIGMENT_LEFT, 200, footerStyle);
-
-        return reportBuilder;
+        return title;
     }
 }

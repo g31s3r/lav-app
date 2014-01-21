@@ -1,6 +1,8 @@
 package com.menoia.lav.vaadin.field;
 
 import com.google.common.base.Joiner;
+import com.menoia.lav.vaadin.container.LavanderiaContainerFactory;
+import com.menoia.lav.vaadin.container.PrototypeContainer;
 import com.menoia.lav.vaadin.entity.Prototype;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.HorizontalLayout;
@@ -46,7 +48,7 @@ public class PrototypeField extends EntityField implements ValueChangeListener {
         vertical.addComponent(layout);
         vertical.setExpandRatio(layout, 1);
         vertical.addComponent(textCustomer);
-        vertical.addComponent(textProcesses);
+        // vertical.addComponent(textProcesses);
 
         addListener(this);
 
@@ -58,14 +60,18 @@ public class PrototypeField extends EntityField implements ValueChangeListener {
     public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 
         Prototype prototype = (Prototype) event.getProperty().getValue();
+
+        PrototypeContainer container =
+            (PrototypeContainer) LavanderiaContainerFactory.getInstance().getContainer(Prototype.class);
+        prototype = container.refresh(prototype);
+
         if (prototype != null) {
             vertical.setSpacing(true);
             textCustomer.setValue(prototype.getCustomer().toString());
             textCustomer.setVisible(true);
             textProcesses.setValue(Joiner.on(", ").join(prototype.getProcesses()));
             textProcesses.setVisible(true);
-        }
-        else {
+        } else {
             vertical.setSpacing(false);
             textCustomer.setValue(null);
             textCustomer.setVisible(false);
@@ -73,7 +79,7 @@ public class PrototypeField extends EntityField implements ValueChangeListener {
             textProcesses.setVisible(false);
         }
     }
-    
+
     @Override
     public void setReadOnly(boolean readOnly) {
 

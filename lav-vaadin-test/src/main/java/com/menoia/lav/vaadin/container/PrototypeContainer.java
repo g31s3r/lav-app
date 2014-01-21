@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.menoia.lav.vaadin.entity.Prototype;
+import com.menoia.lav.vaadin.entity.Sale;
 import com.menoia.lav.vaadin.entity.Status;
 
 import enterpriseapp.hibernate.DefaultHbnContainer;
@@ -21,10 +22,27 @@ public class PrototypeContainer extends DefaultHbnContainer<Prototype> {
         super(Prototype.class);
     }
 
+    public Prototype refresh(Prototype entity) {
+
+        if (entity != null) {
+            sessionManager.getSession().refresh(entity);
+            // just to load processes
+            entity.getProcesses();
+        }
+        return entity;
+    }
+
+    @Override
+    public void afterSaveOrUpdate(Prototype entity) {
+
+        SaleContainer saleContainer = (SaleContainer) LavanderiaContainerFactory.getInstance().getContainer(Sale.class);
+        saleContainer.updateAllWithNewPrototype(entity);
+    }
+
     @Override
     public void beforeSaveOrUpdate(Prototype entity) {
-        
-        if(entity.getStatus() == null) {
+
+        if (entity.getStatus() == null) {
             entity.setStatus(Status.INPUT);
         }
 

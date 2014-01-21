@@ -1,5 +1,6 @@
 package com.menoia.lav.vaadin.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -28,6 +29,9 @@ public class Sale extends Dto {
     @JoinColumn(nullable = false)
     private Prototype prototype;
 
+    @ManyToOne
+    private Customer customer;
+
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -38,6 +42,12 @@ public class Sale extends Dto {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column
+    private BigDecimal unitPrice;
+
+    @Column
+    private BigDecimal total;
 
     @Column
     private Long rol;
@@ -147,6 +157,36 @@ public class Sale extends Dto {
     public void setPrototype(Prototype prototype) {
 
         this.prototype = prototype;
+    }
+
+    public Customer getCustomer() {
+
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+
+        this.customer = customer;
+    }
+
+    public BigDecimal getUnitPrice() {
+
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getTotal() {
+
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+
+        this.total = total;
     }
 
 }

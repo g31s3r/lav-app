@@ -27,6 +27,8 @@ public class LavanderiaFormatter extends DefaultPropertyFormatter {
                     crudFieldAnnotation, crudTable);
         }
 
+        value = (value == null && property.getValue() != null) ? property.getValue().toString() : value;
+
         return value != null ? value.toUpperCase() : value;
     }
 

@@ -59,8 +59,6 @@
 				<version>1.0.2</version>
 				<executions>
 					<execution>
-						<configuration>
-						</configuration>
 						<goals>
 							<goal>update-widgetset</goal>
 						</goals>

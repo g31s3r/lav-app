@@ -1,5 +1,7 @@
 package com.menoia.lav.vaadin.container;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -13,6 +15,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.criterion.Order;
 
 import com.menoia.lav.vaadin.entity.Customer;
+import com.menoia.lav.vaadin.entity.Prototype;
 import com.menoia.lav.vaadin.entity.Sale;
 import com.menoia.lav.vaadin.entity.Status;
 
@@ -29,34 +32,64 @@ public class SaleContainer extends DefaultHbnContainer<Sale> {
         super(Sale.class);
     }
 
-    public Collection<?> getCallReportData(Customer customer, String[] properties, Class<?>[] classes) {
+    public List<Sale> findByPrototype(Prototype prototype) {
 
-        List<?> result;
-        if (customer != null) {
-            result =
-                specialQuery(
-                    "select date, prototype.description, prototype.unitPrice, quantity, prototype.unitPrice * quantity, status from Sale where prototype.customer = ?",
-                    new Object[] { customer });
-        } else {
-            result =
-                specialQuery("select date, prototype.description, prototype.unitPrice, quantity, prototype.unitPrice * quantity, status from Sale");
+        return query("from Sale where prototype = ?", new Object[] { prototype });
+    }
+
+    public void updateAllWithNewPrototype(Prototype prototype) {
+
+        List<Sale> sales = findByPrototype(prototype);
+        for (Sale sale : sales) {
+            saveOrUpdateEntity(sale);
         }
+    }
+
+    public Collection<?> getCallReportData(Customer customer, Status status, String[] properties, Class<?>[] classes) {
+
+        List<Object> filters = new ArrayList<>();
+        
+        StringBuilder sb =new StringBuilder();
+        sb.append("select date, customer.name, prototype.seal, unitPrice, quantity, total, status from Sale where 1=1 ");
+        
+        if (customer != null) {
+            sb.append("and customer = ? ");
+            filters.add(customer);
+        }
+        
+        if(status != null) {
+            sb.append("and status = ? ");
+            filters.add(status);
+        }
+        
+        sb.append("order by date, prototype.seal");
+        
+        List<?> result = specialQuery(sb.toString(), filters.toArray());
+        
         return parseSpecialQueryResult(result, properties, classes);
     }
 
     @Override
     public void beforeSaveOrUpdate(Sale entity) {
 
+        // Set customer, total, and unitprice based on prototype
+        if (entity.getPrototype() != null) {
+            entity.setCustomer(entity.getPrototype().getCustomer());
+            entity.setUnitPrice(entity.getPrototype().getUnitPrice());
+            entity.setTotal(entity.getPrototype().getUnitPrice()
+                .multiply(new BigDecimal(entity.getQuantity().toString())));
+        }
+
         // Fill the delivered date
         if (entity.getStatus() == Status.DELIVERED && entity.getDelivered() == null) {
             entity.setDelivered(DateUtils.truncate(new Date(), Calendar.DAY_OF_MONTH));
         }
-        
+
         // Set billing date if delivered is not null
         if (entity.getDelivered() != null && entity.getBilling() == null) {
             entity.setBilling(DateUtils.addDays(entity.getDelivered(), DAYS_TO_PAY));
         }
-        
+
     }
 
     @Override
