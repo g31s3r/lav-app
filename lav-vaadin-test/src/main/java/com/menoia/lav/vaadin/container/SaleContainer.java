@@ -45,12 +45,12 @@ public class SaleContainer extends DefaultHbnContainer<Sale> {
         }
     }
 
-    public Collection<?> getCallReportData(Customer customer, Status status, String[] properties, Class<?>[] classes) {
+    public Collection<?> getCallReportData(Customer customer, Status status, Date from, Date to, String[] properties, Class<?>[] classes) {
 
         List<Object> filters = new ArrayList<>();
         
         StringBuilder sb =new StringBuilder();
-        sb.append("select date, customer.name, prototype.seal, unitPrice, quantity, total, status from Sale where 1=1 ");
+        sb.append("select customer.name, date, delivered, billing, prototype.seal, unitPrice, quantity, total, status from Sale where 1=1 ");
         
         if (customer != null) {
             sb.append("and customer = ? ");
@@ -60,6 +60,16 @@ public class SaleContainer extends DefaultHbnContainer<Sale> {
         if(status != null) {
             sb.append("and status = ? ");
             filters.add(status);
+        }
+        
+        if(from != null) {
+            sb.append("and date >= ? ");
+            filters.add(from);
+        }
+        
+        if(to != null) {
+            sb.append("and date <= ? ");
+            filters.add(to);
         }
         
         sb.append("order by date, prototype.seal");

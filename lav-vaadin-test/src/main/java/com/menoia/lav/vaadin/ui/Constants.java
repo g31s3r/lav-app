@@ -26,6 +26,8 @@ public class Constants extends enterpriseapp.ui.Constants {
     public static final String uiSalesReport = Utils.getProperty("ui.salesReport");
     public static final String uiStatus = Utils.getProperty("ui.status");
     public static final String uiPrint = Utils.getProperty("ui.print");
+    public static final String uiColumnsCount = Utils.getProperty("ui.columnsCount");
+    public static final String uiGroupingCount = Utils.getProperty("ui.groupingCount");
 
     public static final String uiUserLogin = Utils.getProperty("ui.user.login");
     public static final String uiUserPassword = Utils.getProperty("ui.user.password");

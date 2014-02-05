@@ -1,0 +1,75 @@
+db.persistenceUnit=lav-pu
+db.schemaGeneration=update
+db.show_sql=true
+db.interceptor=enterpriseapp.hibernate.AuditInterceptor
+
+#db.driver=org.hsqldb.jdbcDriver
+#db.dialect=org.hibernate.dialect.HSQLDialect
+#db.url=jdbc:hsqldb:mem:lav
+#db.user=sa
+#db.password=
+
+db.driver=com.mysql.jdbc.Driver
+db.dialect=org.hibernate.dialect.MySQLDialect
+db.url=jdbc:mysql://localhost:3306/lav
+#db.url=jdbc:mysql://mysql-stonejeans.jelasticlw.com.br/lav
+db.user=lav
+db.password=lavpwd
+
+# Custom texts
+ui.appName=Lavanderia App - ${version}
+ui.welcome=Welcome
+ui.welcomeMessage=<h1>Welcome to Lavanderia App!</h1><big><p>Developed by <a href="mailto:geiser@stonejeans.com.br">Geiser Menoia</a>.</p><h2>Features</h2><ul><li>Customer</li><li>Prototypes</li><li>Sales</li><li>Processes</li><li>Reports</li><li>Etc..</li></ul>
+ui.users=Users
+ui.hqlQueries=HQL queries
+ui.auditLog=Audit log
+ui.serverLog=Server log files
+ui.login=Log in
+ui.logout=Log out
+ui.invalidCredentials=Invalid credentials
+ui.forInternalUseOnly=For internal use only
+ui.customers=Customers
+ui.customer=Customer
+ui.entries=Entries
+ui.brands=Brands
+ui.sales=Sales
+ui.salesReport=Sales report
+ui.prototypes=Prototypes
+ui.processes=Processes
+ui.reports=Reports
+ui.print=Print
+ui.status=Status
+ui.columnsCount=Columns(%d)
+ui.groupingCount=Grouping (%d)
+
+# CRUD labels
+ui.user.login=Username
+ui.user.password=Password
+
+ui.status.INPUT=Input
+ui.status.DELIVERED=Delivered
+ui.status.THIRD_PARTY=Third Party
+ui.status.IN_PROCESS=In Process
+ui.status.READY=Ready 
+
+# CURD fields visibility and order
+ui.audit.form.visibleFields=date, user, action, entityType, dtoId, ip, details
+ui.audit.table.visibleFields=date, user, action, entityType, dtoId, ip, details
+
+ui.user.form.visibleFields=login, password, configurationAccess, readAccess, modifyAccess, reportsAccess
+ui.user.table.visibleFields=login, password, configurationAccess, readAccess, modifyAccess, reportsAccess
+
+ui.brand.form.visibleFields=name
+ui.brand.table.visibleFields=name
+
+ui.customer.form.visibleFields=name, city, phone, cellphone, email, brands
+ui.customer.table.visibleFields=name, city, phone, cellphone, email
+  
+ui.sale.form.visibleFields=date, prototype, quantity, status, rol, delivered, billing, observation
+ui.sale.table.visibleFields=id, date, customer, prototype, quantity, unitPrice, total, status
+
+ui.prototype.form.visibleFields=date, customer, brand, seal, unitPrice, processes, status, reference, description, leave
+ui.prototype.table.visibleFields=id, date, seal, customer, processes, unitPrice, suggestedPrice, status
+
+ui.process.form.visibleFields=name, price
+ui.process.table.visibleFields=name, price

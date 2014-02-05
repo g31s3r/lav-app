@@ -15,6 +15,11 @@ import ar.com.fdvs.dj.domain.constants.HorizontalAlign;
 import com.menoia.lav.vaadin.ui.Constants;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.Content;
+import com.vaadin.ui.VerticalLayout;
 
 import enterpriseapp.Utils;
 import enterpriseapp.ui.reports.PrintViewReport;
@@ -31,6 +36,8 @@ public abstract class LavanderiaReport extends PrintViewReport {
 
     private SortedSet<LavanderiaReportColumn> columns;
     private Button printButton;
+    private PopupView columnsPopup;
+    private PopupView groupingPopup;
 
     public abstract SortedSet<LavanderiaReportColumn> getReportColumns();
 
@@ -47,6 +54,19 @@ public abstract class LavanderiaReport extends PrintViewReport {
         displayLayout.removeAllComponents();
         displayLayout.addComponent(refreshButton);
         displayLayout.addComponent(printButton);
+        
+        // displayLayout.addComponent(createColumnsOptions());
+        // displayLayout.addComponent(createGroupingOptions());
+        // displayLayout.addComponent(createExportOptions());
+
+        columnsPopup = new PopupView(new GroupingPopupContent(Constants.uiColumnsCount, columnsCheckBoxes));
+        columnsPopup.setHideOnMouseOut(false);
+        
+        groupingPopup = new PopupView(new GroupingPopupContent(Constants.uiGroupingCount, groupingCheckBoxes));
+        groupingPopup.setHideOnMouseOut(false);
+
+        displayLayout.addComponent(columnsPopup);
+        displayLayout.addComponent(groupingPopup);
     }
 
     @Override
@@ -94,8 +114,9 @@ public abstract class LavanderiaReport extends PrintViewReport {
 
         // let's override this method to add some elements to the report
         DynamicReportBuilder reportBuilder = super.getReportBuilder();
-        
-        //reportBuilder.addGlobalHeaderVariable(columnAmount, ColumnsGroupVariableOperation.SUM);
+
+        // reportBuilder.addGlobalHeaderVariable(columnAmount,
+        // ColumnsGroupVariableOperation.SUM);
 
         Style headerStyle = new StyleBuilder(true).setFont(Font.ARIAL_MEDIUM).build();
 
@@ -123,6 +144,50 @@ public abstract class LavanderiaReport extends PrintViewReport {
     public String getTitle() {
 
         return Constants.uiSalesReport;
+    }
+
+    public class GroupingPopupContent implements Content {
+
+        private static final long serialVersionUID = 1L;
+
+        private String caption;
+        private CheckBox[] checkboxes;
+
+        public GroupingPopupContent(String caption, CheckBox[] checkboxes) {
+
+            super();
+            this.caption = caption;
+            this.checkboxes = checkboxes;
+        }
+
+        @Override
+        public String getMinimizedValueAsHTML() {
+
+            List<String> values = new ArrayList<>();
+
+            for (CheckBox check : checkboxes) {
+                if (check.booleanValue()) {
+                    values.add(check.getCaption());
+                }
+            }
+
+            return String.format(caption, values.size());
+        }
+
+        @Override
+        public Component getPopupComponent() {
+
+            VerticalLayout groupingLayout = new VerticalLayout();
+            groupingLayout.setSizeUndefined();
+            groupingLayout.setSpacing(true);
+
+            for (CheckBox box : checkboxes) {
+                groupingLayout.addComponent((Component) box);
+            }
+
+            return groupingLayout;
+        }
+
     }
 
 }

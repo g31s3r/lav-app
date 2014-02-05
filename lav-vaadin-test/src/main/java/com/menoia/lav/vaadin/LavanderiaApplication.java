@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.menoia.lav.vaadin.container.DummyDataCreator;
 import com.menoia.lav.vaadin.container.LavanderiaContainerFactory;
-import com.menoia.lav.vaadin.job.DummyDataCreationJob;
 import com.menoia.lav.vaadin.module.ConfigurationModule;
 import com.menoia.lav.vaadin.module.EntriesModule;
 import com.menoia.lav.vaadin.module.ReportsModule;
@@ -43,7 +42,7 @@ public class LavanderiaApplication extends EnterpriseApplication {
             DummyDataCreator.bootstrap();
 
             // Schedule dummy data creation job
-            DummyDataCreationJob.schedule();
+            // DummyDataCreationJob.schedule();
         }
 
         // show content according to the state of getUser()
@@ -60,6 +59,10 @@ public class LavanderiaApplication extends EnterpriseApplication {
 
         // we are gonna create an empty window and add a new LoginWindow to it
         LoginWindow emptyMainWindow = new LoginWindow();
+        
+        emptyMainWindow.getLoginTf().setValue(null);
+        emptyMainWindow.getPasswordTf().setValue(null);
+        
         Window mainWindow = new Window(Constants.uiAppName);
 
         mainWindow.addWindow(emptyMainWindow);
@@ -112,9 +115,10 @@ public class LavanderiaApplication extends EnterpriseApplication {
         // add them to a new ArrayList so we can pass them to the MDIWindow
         // constructor
         ArrayList<Module> modules = new ArrayList<Module>();
-        modules.add(configurationModule);
+
         modules.add(entriesModule);
         modules.add(reportsModule);
+        modules.add(configurationModule);
 
         return modules;
     }
